@@ -78,6 +78,25 @@ def handle_hello():
         })
     return jsonify(result)
 
+@app.route('/user/<string:email>', methods=['GET'])
+def get_user_by_email(email):
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        return jsonify({'message': 'Usuario no encontrado'}), 404
+
+    return jsonify(user.serialize())
+
+@app.route('/user/rol/<string:rol>', methods=['GET'])
+def get_users_by_role(rol):
+    users = User.query.filter_by(rol=rol).all()
+    if len(users) == 0:
+        return jsonify({'message': 'No se encontraron usuarios con ese rol'}), 404
+
+    serialized_users = [user.serialize() for user in users]
+    return jsonify(serialized_users)
+
+
+
 
 @app.route('/user', methods=['POST'])
 def create_user():
@@ -110,13 +129,49 @@ def create_muestra():
         specimen=data['specimen'],
         quality_specimen=data['quality_specimen'],
         image_specimen=data['image_specimen'],
-        aditional_coments=data['aditional_coments']
+        aditional_comments=data['aditional_comments']
     )
 
     db.session.add(muestra)
     db.session.commit()
 
     return jsonify({'message': 'Muestra  creada correctamente'})
+
+
+@app.route('/muestra', methods=['GET'])
+def get_muestra():
+    muestras = Muestra.query.all()
+    result = list(map(lambda muestr:muestr.serialize(),muestras))
+    return jsonify(result)
+
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    # Buscar el usuario por su ID
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({'message': 'Usuario no encontrado'}), 404
+
+    # Eliminar el usuario de la base de datos
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({'message': 'Usuario eliminado correctamente'})
+
+
+@app.route('/muestra/<int:muestra_id>', methods=['DELETE'])
+def delete_muestra(muestra_id):
+    # Buscar la muestra por su ID
+    muestra = Muestra.query.get(muestra_id)
+
+    if muestra is None:
+        return jsonify({'message': 'Muestra no encontrada'}), 404
+
+    # Eliminar la muestra de la base de datos
+    db.session.delete(muestra)
+    db.session.commit()
+
+    return jsonify({'message': 'Muestra eliminada correctamente'})
 
 
 
