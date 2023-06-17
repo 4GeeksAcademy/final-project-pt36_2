@@ -63,6 +63,8 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0 # avoid cache memory
     return response
 
+
+#Get de Users
 @app.route('/user', methods=['GET'])
 def handle_hello():
     users = User.query.all()
@@ -78,6 +80,7 @@ def handle_hello():
         })
     return jsonify(result)
 
+#Get Users por mail
 @app.route('/user/<string:email>', methods=['GET'])
 def get_user_by_email(email):
     user = User.query.filter_by(email=email).first()
@@ -86,6 +89,7 @@ def get_user_by_email(email):
 
     return jsonify(user.serialize())
 
+#Get users por Rol
 @app.route('/user/rol/<string:rol>', methods=['GET'])
 def get_users_by_role(rol):
     users = User.query.filter_by(rol=rol).all()
@@ -97,7 +101,7 @@ def get_users_by_role(rol):
 
 
 
-
+#Agregar nuevos usuarios
 @app.route('/user', methods=['POST'])
 def create_user():
     data = request.json
@@ -117,6 +121,7 @@ def create_user():
     return jsonify({'message': 'Usuario creado correctamente'})
 
 
+#Agregar muestra
 @app.route('/muestra', methods=['POST'])
 def create_muestra():
     data = request.json
@@ -138,12 +143,16 @@ def create_muestra():
     return jsonify({'message': 'Muestra  creada correctamente'})
 
 
+
+#Get muestras 
 @app.route('/muestra', methods=['GET'])
 def get_muestra():
     muestras = Muestra.query.all()
     result = list(map(lambda muestr:muestr.serialize(),muestras))
     return jsonify(result)
 
+
+#Delete usuario por id
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     # Buscar el usuario por su ID
@@ -159,6 +168,7 @@ def delete_user(user_id):
     return jsonify({'message': 'Usuario eliminado correctamente'})
 
 
+#Delete muestra por id
 @app.route('/muestra/<int:muestra_id>', methods=['DELETE'])
 def delete_muestra(muestra_id):
     # Buscar la muestra por su ID
